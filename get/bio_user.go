@@ -48,7 +48,7 @@ func GetUser() ([]getApiResponse, error) {
 
 	// req.Header.Set("Host", "192.168.88.79:8443")
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("bs-session-id", "3bf571c673a144758289b8d81457f81c")
+	req.Header.Set("bs-session-id", "ba2fa72a11c540839eb553757dbb852c")
 	// req.Header.Set("Cookie", "bs-session-id=8a2efee39aa44023b89e03b48ab107e0")
 
 	res,err := client.Do(req)
