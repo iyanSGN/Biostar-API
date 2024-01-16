@@ -15,21 +15,18 @@ import (
 type User struct {	
 	UserID     		string 			`json:"user_id"`
 	UserGroupID    struct {
-		ID int `json:"id"`
+		ID string `json:"id"`
 	} `json:"user_group_id"`
-	StartDatetime   time.Time 		`json:"start_datetime"`
+	StartDatetime  	time.Time 		`json:"start_datetime"`
 	ExpiryDatetime  time.Time 		`json:"expiry_datetime"`
 	Name            string 			`json:"name"`
 	Email           string 			`json:"email"`
-	Password        string 			`json:"password"`
-	UserIP          string 			`json:"user_ip"`
-	LoginID			string 			`json:"login_id"`
 }
 
 type PostUsers struct {
 	UserID     		string 			`json:"user_id"`
 	UserGroupID    struct {
-		ID int `json:"id"`
+		ID string `json:"id"`
 	} `json:"user_group_id"`
 	StartDatetime   time.Time 		`json:"start_datetime"`
 	ExpiryDatetime  time.Time 		`json:"expiry_datetime"`
@@ -37,7 +34,22 @@ type PostUsers struct {
 	Email           string 			`json:"email"`
 }
 
-func PostUser(request PostUsers) (PostUsers, error) {
+// type Post struct {
+//     Id     int    `json:"id"`
+//     Title  string `json:"title"`
+//     Body   string `json:"body"`
+//     UserId int    `json:"userId"`
+// }
+
+// type PostData struct {
+//     Title  string `json:"title"`
+//     Body   string `json:"body"`
+//     UserId int    `json:"userId"`
+// }
+
+
+
+func PostUser(post User) (User, error) {
 	url := "https://192.168.88.79:8443/api/users" // Replace with your actual API endpoint
 	method := "POST"
 	transport := &http.Transport{
@@ -47,17 +59,19 @@ func PostUser(request PostUsers) (PostUsers, error) {
 	client := &http.Client{Transport: transport}
 
 	// Create a JSON payload using a struct and marshaling it
-	payload := User{
-		UserID: request.UserID,
-		UserGroupID: request.UserGroupID,
-		Name: request.Name,
-		Email: request.Email,
+	payload := PostUsers{
+		UserID: post.UserID,
+		UserGroupID: post.UserGroupID,
+		Name: post.Name,
+		Email: post.Email,
 		}
 
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	fmt.Println(string(payloadBytes))
 	
 	req, err := http.NewRequest(method, url, bytes.NewBuffer(payloadBytes))
 
@@ -84,15 +98,15 @@ func PostUser(request PostUsers) (PostUsers, error) {
 	if err := json.Unmarshal(body, &users);
 	err != nil {
 		fmt.Println("error decoding JSON: ", err.Error())
-		return request, nil
+		return post, nil
 	}
 
-	return request, nil
+	return post, nil
 }
 
 
 func HandleUser(c echo.Context) error {
-	var request PostUsers
+	var request User
 
 	err := c.Bind(&request)
 	if err != nil {
@@ -108,7 +122,7 @@ func HandleUser(c echo.Context) error {
 		"status_code" : http.StatusOK,
 		"data" : map[string]interface{}{
 			"message" :  "register Successfull",
-			"email" : createdUser.Email,
+			"Name" : createdUser.Name,
 		},
 	}
 

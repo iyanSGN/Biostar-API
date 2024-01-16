@@ -57,19 +57,114 @@
 // 		}
 // 		fmt.Println(string(body))
 // 	}
+
+// package main
+
+// import (
+// 	"main/routes"
+
+// 	"github.com/labstack/echo/v4"
+// )
+
+// func main() {
+// 	e := echo.New()
+
+// 	routes.Init(e)
+
+// 	e.Logger.Fatal(e.Start(":8700"))
+
+// }
+
+// package main
+
+// import (
+// 	"bytes"
+// 	"encoding/json"
+// 	"fmt"
+// 	"io/ioutil"
+// 	"log"
+// 	"net/http"
+// )
+
+// type Todo struct {
+// 	UserID    int    `json:"userId"`
+// 	ID        int    `json:"id"`
+// 	Title     string `json:"title"`
+// 	Completed bool   `json:"completed"`
+// }
+
+// func main() {
+// 	todo := Todo{1, 2, "lorem ipsum dolor sit amet", true}
+// 	jsonReq, err := json.Marshal(todo)
+// 	if err != nil {
+// 		fmt.Println("error: ", err)
+// 	}
+
+// 	req, err := http.NewRequest(http.MethodPut, "https://jsonplaceholder.typicode.com/todos/1", bytes.NewBuffer(jsonReq))
+// 	if err != nil {
+// 		fmt.Println("error req: ", err)
+// 	}
+
+// 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+// 	client := &http.Client{}
+// 	resp, err := client.Do(req)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+
+// 	defer resp.Body.Close()
+// 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+
+// 	// Convert response body to string
+// 	bodyString := string(bodyBytes)
+// 	fmt.Println(bodyString)
+
+// 	// Convert response body to Todo struct
+// 	var todoStruct Todo
+// 	json.Unmarshal(bodyBytes, &todoStruct)
+// 	fmt.Printf("API Response as struct:\n%+v\n", todoStruct)
+// }
+
 package main
 
 import (
-	"main/routes"
-
-	"github.com/labstack/echo/v4"
+	"crypto/tls"
+	"fmt"
+	"io/ioutil"
+	"net/http"
 )
 
 func main() {
-	e := echo.New()
 
-	routes.Init(e)
+  url := "https://192.168.88.79:8443/api/users?id=876"
+  method := "DELETE"
 
-	e.Logger.Fatal(e.Start(":8700"))
+  transport := &http.Transport{
+	TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+}
 
+	client := &http.Client{Transport: transport}
+
+  req, err := http.NewRequest(method, url, nil)
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+
+  	req.Header.Set("Content-Type", "application/json") // Set the content type
+	req.Header.Set("bs-session-id", "ee5117a427bb4f7f9afc135d7d5beb75")
+
+  res, err := client.Do(req)
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  defer res.Body.Close()
+
+  body, err := ioutil.ReadAll(res.Body)
+  if err != nil {
+    fmt.Println(err)
+    return
+  }
+  fmt.Println(string(body))
 }
